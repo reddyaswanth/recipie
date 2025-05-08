@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Food Recipe Finder</title>
+    <style>
+        /* Global Reset */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fefcf5;
+            color: #333;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color:#32064a;
+        }
+        
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        #search-input {
+            width: 60%;
+            padding: 10px 15px;
+            border: 2px solid #e67e22;
+            border-right: none;
+            border-radius: 5px 0 0 5px;
+            outline: none;
+            font-size: 16px;
+        }
+        #search-button {
+            padding: 10px 20px;
+            border: 2px solid #e67e22;
+            background-color: #e67e22;
+            color: #fff;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #search-button:hover {
+            background-color: violet;
+        }
+        /* Grid Layout for Recipes */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .card-content {
+            padding: 15px;
+        }
+        .card-content h3 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            color: #d35400;
+        }
+        .card-content p {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #555;
+        }
+        @media (max-width: 600px) {
+            #search-input { width: 100%; }
+            .search-container { flex-direction: column; }
+            #search-input, #search-button { border-radius: 5px; border-right: 2px solid #e67e22; }
+            #search-button { margin-top: 10px; }
+        }
+        .head{
+             border: 1px solid;
+             height: 80px;
+             background-color: aliceblue;
+             padding: 20px;
+             color: brown;
+
+            
+             
+
+    }
+    .head h1{
+        color: darkgreen;
+        
+    }
+        
+        
+
+        
+        
+    </style>
+</head>
+<body>
+    <div class="head">
+    <header>
+    <h1>𝐑𝐄𝐂𝐈𝐏𝐄 𝐅𝐈𝐍𝐃𝐄𝐑</h1>
+</header>
+</div>
+<br>
+<br>
+    <div class="search-container">
+        <br>
+        <input type="text" id="search-input" placeholder="Enter meal name (e.g. fish)"" />
+        <br>
+        <br>
+        <button id="search-button">Search</button>
+    </div>
+    <div id="results" class="grid"></div>
+
+    <script>
+        const API_URL = 'https://www.themealdb.com/api/json/v1/1/search.php?s=';
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
+        const resultsContainer = document.getElementById('results');
+
+        searchButton.addEventListener('click', () => {
+            const query = searchInput.value.trim();
+            if (!query) return;
+            fetchRecipes(query);
+        });
+
+        async function fetchRecipes(query) {
+            resultsContainer.innerHTML = '<p>Loading...</p>';
+            try {
+                const res = await fetch(API_URL + encodeURIComponent(query));
+                const data = await res.json();
+                displayRecipes(data.meals);
+            } catch (err) {
+                resultsContainer.innerHTML = '<p>Error fetching recipes.</p>';
+                console.error(err);
+            }
+        }
+
+        function displayRecipes(meals) {
+            if (!meals) {
+                resultsContainer.innerHTML = '<p>No recipes found.</p>';
+                return;
+            }
+            resultsContainer.innerHTML = meals.map(meal => `
+                <div class="card">
+                    <img src="${meal.strMealThumb}" alt="${meal.strMeal}" />
+                    <div class="card-content">
+                        <h3>${meal.strMeal}</h3>
+                        <p>${meal.strInstructions.substring(0, 100)}...</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
